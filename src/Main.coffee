@@ -1,0 +1,123 @@
+class LogAndRoll
+
+  @sharedInstance: null
+  @launch: (attrs) ->
+
+    return @sharedInstance if @sharedInstance != null
+
+    @sharedInstance = new LogAndRoll(attrs)
+
+    #create shortcut log function
+    window.LogNRoll = @sharedInstance.LogNRoll if @sharedInstance != null
+
+    return @sharedInstance
+
+  postingBlobs: no
+  postBlobs: ->
+    return if postingBlobs
+
+    postingBlobs = no
+
+  buffer: []
+
+  constructor: (attrs) ->
+
+    # Check supported storage engines
+    storageEngines = StorageEngine.checkSupportedEngines()
+    # Do the same for send engines
+    sendEngines = SendEngine.checkSupportedEngines()
+
+    compareNice = (a, b) ->
+      if a.nice > b.nice
+        return -1
+      else if (a.nice < b.nice)
+        return 1
+
+      return 0
+
+    # Sort based on nice value
+    sendEngines.sort(compareNice)
+    storageEngines.sort(compareNice)
+
+    if sendEngines.length == 0 or storageEngines.length == 0
+      console.error "Log & Roll is not supported as no suitable engines could be found for this platform"
+      return null
+
+    # Grab the first & the best!
+    @storageEngine = new storageEngines[0](@)
+    @sendEngine = new sendEngines[0](@)
+
+    defaultSettings =
+      saveDebounce: @storageEngine.constructor.saveDebounce
+      sendTimeout: @sendEngine.constructor.sendTimeout
+      device: {}
+
+    # Extend attrs with our default settings
+    extend(attrs, defaultSettings)
+
+    @device = attrs.device
+    @appName = attrs.appName
+    @APIKey = attrs.APIKey
+
+    sendLogs = =>
+
+      # Grab a blob we want to send
+      @storageEngine.nextBlob((blob) =>
+        if blob.logs.length > 0
+          @sendEngine.sendBlob(blob, (err) =>
+            if not err?
+              @storageEngine.deleteBlob(blob)
+
+            sendTick()
+          )
+        else
+          sendTick()
+      )
+
+    sendTick = =>
+      sendTimer = setTimeout(sendLogs, attrs.sendTimeout)
+
+    sendTick()
+
+    @saveBlobs = =>
+      # Copy the buffer length 'as is' when saving, append, remove the objects when done from the buffer
+      # Only when successful!
+      originalBufferLength = @buffer.length
+
+      return if originalBufferLength <= 0
+
+      @storageEngine.appendBlob(@buffer, (error) =>
+        if error?
+          # Storage is full, we should try sending RIGHT NOW so we can ditch the stuff!
+          sendLogs()
+        else
+          @buffer.splice(0, originalBufferLength)
+      )
+
+    saveLogTick = debounce(@saveBlobs, attrs.saveDebounce)
+
+    @LogNRoll = =>
+      tag = arguments[0]
+      message = ""
+
+      # combine rest of arguments as message
+      len = arguments.length-1
+      for i in [1..len]
+        message += niceIfy(arguments[i])
+        message += " " if i < len
+
+      logObj =
+        tag: tag
+        message: message
+        timestamp: ts()
+
+      # Queue for saving later
+      @buffer.push(logObj)
+      saveLogTick()
+
+      return logObj
+
+
+
+#Main Name Space
+window.LogAndRoll = LogAndRoll
