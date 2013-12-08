@@ -1,5 +1,6 @@
-if not LogAndRoll?
-  # This is NodeJS!
+isNodeJS = process?
+
+if isNodeJS
   require "./LogAndRollSDK.js"
 
   process.on "uncaughtException", (e) ->
@@ -11,6 +12,13 @@ logAndRoll = logAndRoll = LogAndRoll.launch(
   debug: yes
   sendTimeout: 3000
 )
+
+if isNodeJS
+  # Callback for travis
+  jasmineEnv = jasmine.getEnv()
+  oldCallback = jasmineEnv.currentRunner().finishCallback
+  jasmineEnv.currentRunner().finishCallback = ->
+    oldCallback.apply this, arguments
 
 window.logAndRoll = logAndRoll # for console debugging
 

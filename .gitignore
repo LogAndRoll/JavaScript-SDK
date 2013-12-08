@@ -1,5 +1,6 @@
 .DS_Store
 .idea
+LogAndRoll
 
 lib-cov
 *.seed
