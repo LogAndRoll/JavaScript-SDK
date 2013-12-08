@@ -1,7 +1,7 @@
 exports.config = config =
   # See http://brunch.readthedocs.org/en/latest/config.html for documentation.
 
-  serverUrl: "http://logroll.in"
+  serverUrl: "https://logroll.in"
 
   environment: ""
 
