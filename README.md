@@ -35,8 +35,8 @@ Yeah that's right. I'll write a blog post about it how it works, for now you hav
 
 ##Contribute
 
-Help from the community means a lot to me to me, which is why all Log&Roll SDKs are open-source.
+Help from the community means a lot to me, which is why all Log&Roll SDKs are open-source.
 
 If you would like to make changes to the JavaScript SDK, you are encouraged to clone this repository and make a pull request!
-Want to make an SDK for a new platform? Please submit your information about the SDK on the [contact page](http://logroll.in/#/contact) and if you like, we can add and support it as a official plarfrom SDK!
+Want to make an SDK for a new platform? Please submit your information about the SDK on the [contact page](http://logroll.in/#/contact) and if you like, we can add and support it as a official platform SDK!
 
