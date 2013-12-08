@@ -2,6 +2,7 @@
 
 Log&Roll SDK
 =======
+[![Build Status](https://travis-ci.org/LogAndRoll/JavaScript-SDK.png?branch=master)](https://travis-ci.org/LogAndRoll/JavaScript-SDK)
 
 Use the official Log&Roll JavaScript SDK to push logs from your Web or Node app to the Log&Roll network.
 
