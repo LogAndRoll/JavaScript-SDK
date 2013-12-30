@@ -99,9 +99,10 @@ class LogAndRoll
 
     sendTick()
 
-    @saveBlobs = =>
+    @saveBlobs = (callback = null) =>
       # Copy the buffer length 'as is' when saving, append, remove the objects when done from the buffer
       # Only when successful!
+      hasCallback = callback?
       originalBufferLength = @buffer.length
 
       return if originalBufferLength <= 0
@@ -110,8 +111,10 @@ class LogAndRoll
         if error?
           # Storage is full, we should try sending RIGHT NOW so we can ditch the stuff!
           @sendLogs()
+          callback(error) if hasCallback
         else
           @buffer.splice(0, originalBufferLength)
+          callback(null) if hasCallback
       )
 
     saveLogTick = debounce(@saveBlobs, attrs.saveDebounce)

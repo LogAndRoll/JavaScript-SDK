@@ -20,7 +20,7 @@ if isNodeJS
   jasmineEnv.currentRunner().finishCallback = ->
     oldCallback.apply this, arguments
 
-  jasmineEnv.defaultTimeoutInterval = 60 * 1000
+  jasmineEnv.defaultTimeoutInterval = 10 * 1000
 
 window.logAndRoll = logAndRoll # for console debugging
 
@@ -46,7 +46,10 @@ describe "Basic Logging", ->
   it "Logs demo log with tag: error", (done) ->
 
     LogNRoll("error", "Web Request failed: #{Math.random()}")
-    logAndRoll.sendLogs((err) ->
-      expect(err).toBeNull()
-      done()
+    logAndRoll.saveBlobs((saveError) ->
+      expect(saveError).toBeNull()
+      logAndRoll.sendLogs((sendError) ->
+        expect(sendError).toBeNull()
+        done()
+      )
     )
