@@ -13,7 +13,8 @@ ts = ->
 
 extend = (object, properties) ->
   for key, val of properties
-    object[key] = val
+    if not object[key]?
+      object[key] = val
   object
 
 niceIfy = (obj) ->

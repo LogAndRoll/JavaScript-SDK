@@ -1,7 +1,7 @@
 NodeRequestSendEngine = null
 (->
 
-  os = http = url = urlObj = null
+  os = https = url = urlObj = null
 
   class NodeRequestSendEngine extends SendEngine
 
@@ -13,7 +13,7 @@ NodeRequestSendEngine = null
     @supported: ->
 
       try
-        http = require "http"
+        https = require "https"
         url = require "url"
         os = require "os"
 
@@ -39,12 +39,13 @@ NodeRequestSendEngine = null
 
       options =
         host: urlObj.hostname
-        port: urlObj.port
+        port: urlObj.port or 443
+
         path: urlObj.path
         method: "POST"
         headers: headers
 
-      req = http.request(options, (res) ->
+      req = https.request(options, (res) ->
         res.setEncoding "utf-8"
         responseText = ""
         res.on "data", (data) ->
@@ -54,6 +55,10 @@ NodeRequestSendEngine = null
           if responseText == "OK"
             callback()
 
+          else
+            callback(SendEngine.error.sending_failed)
+
+          log "responseText: #{responseText}"
       )
 
       req.on "error", (e) ->

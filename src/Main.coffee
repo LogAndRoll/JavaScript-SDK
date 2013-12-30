@@ -1,5 +1,10 @@
+log = ->
+  # To the bitbucket!
+  return
+
 class LogAndRoll
 
+  @version: "0.5"
   @sharedInstance: null
   @launch: (attrs) ->
 
@@ -51,6 +56,7 @@ class LogAndRoll
       saveDebounce: @storageEngine.constructor.saveDebounce
       sendTimeout: @sendEngine.constructor.sendTimeout
       device: {}
+      debug: no
 
     # Extend attrs with our default settings
     extend(attrs, defaultSettings)
@@ -58,24 +64,38 @@ class LogAndRoll
     @device = attrs.device
     @appName = attrs.appName
     @APIKey = attrs.APIKey
+    @debug = attrs.debug
 
-    sendLogs = =>
+    if @debug
+      log = ->
+        arguments_ = ['L&R >>']
+        for arg in arguments
+          arguments_.push arg
+
+        console.log.apply console, arguments_
+
+    @sendLogs = (callback = null) =>
 
       # Grab a blob we want to send
       @storageEngine.nextBlob((blob) =>
         if blob.logs.length > 0
           @sendEngine.sendBlob(blob, (err) =>
-            if not err?
+            hasCallback = callback?
+            if err?
+              callback(err) if hasCallback
+            else
               @storageEngine.deleteBlob(blob)
+              callback(null) if hasCallback
 
             sendTick()
           )
         else
+          @storageEngine.deleteBlob(blob)
           sendTick()
       )
 
     sendTick = =>
-      sendTimer = setTimeout(sendLogs, attrs.sendTimeout)
+      sendTimer = setTimeout(@sendLogs, attrs.sendTimeout)
 
     sendTick()
 
@@ -89,7 +109,7 @@ class LogAndRoll
       @storageEngine.appendBlob(@buffer, (error) =>
         if error?
           # Storage is full, we should try sending RIGHT NOW so we can ditch the stuff!
-          sendLogs()
+          @sendLogs()
         else
           @buffer.splice(0, originalBufferLength)
       )
@@ -116,6 +136,8 @@ class LogAndRoll
       saveLogTick()
 
       return logObj
+
+    log "Log & Roll JavaScript SDK v#{LogAndRoll.version}"
 
 
 

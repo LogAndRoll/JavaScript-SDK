@@ -6,9 +6,9 @@ if isNodeJS
   process.on "uncaughtException", (e) ->
     console.log "Caught unhandled exception: #{e} ", e.stack
 
-logAndRoll = logAndRoll = LogAndRoll.launch(
+logAndRoll = LogAndRoll.launch(
   appName: "test"
-  APIKey: "lol"
+  APIKey: "M7Enq1DN057S1Med4B66yvHJPkLW3FrhySz"
   debug: yes
   sendTimeout: 3000
 )
@@ -44,5 +44,7 @@ describe "Basic Logging", ->
   it "Logs demo log with tag: error", (done) ->
 
     LogNRoll("error", "Web Request failed: #{Math.random()}")
-    logAndRoll.saveBlobs()
-    setTimeout(done, 3000) if done?
+    logAndRoll.sendLogs((err) ->
+      expect(err).toBeNull()
+      done()
+    )
