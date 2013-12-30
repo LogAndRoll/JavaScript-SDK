@@ -20,6 +20,8 @@ if isNodeJS
   jasmineEnv.currentRunner().finishCallback = ->
     oldCallback.apply this, arguments
 
+  jasmineEnv.defaultTimeoutInterval = 60 * 1000
+
 window.logAndRoll = logAndRoll # for console debugging
 
 describe "Log & Roll initiation", ->
