@@ -1,6 +1,5 @@
 .DS_Store
 .idea
-LogAndRoll
 
 lib-cov
 *.seed
@@ -19,3 +18,4 @@ node_modules
 npm-debug.log
 
 build/*
+LogAndRoll/*
