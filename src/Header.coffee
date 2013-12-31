@@ -8,6 +8,4 @@
 
   Keep calm and Log&Roll!
 
-
-
 ###
