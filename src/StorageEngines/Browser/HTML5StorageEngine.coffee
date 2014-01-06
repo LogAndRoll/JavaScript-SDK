@@ -42,13 +42,16 @@ class HTML5StorageEngine extends StorageEngine
     blobs = []
     @sendingKeys = []
 
-    for i in [0..localStorage.length-1]
+    i = 0
+    while i < localStorage.length
       key = localStorage.key(i)
 
-      if StorageEngine.isValidBlobName(key)
+      if key? and key.length > 0 and StorageEngine.isValidBlobName(key)
         @sendingKeys.push(key)
         blob = JSON.parse(Store.get(key))
         blobs = blobs.concat(blob)
+
+      i++
 
     callback(logs: blobs)
 

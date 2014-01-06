@@ -28,6 +28,7 @@ NodeRequestSendEngine = null
         version: "#{process.version}"
         platform: "NodeJS"
         type: "server"
+        name: os.hostname()
 
       blob.deviceDetails = extend(blob.deviceDetails, @logAndRoll.device)
 
